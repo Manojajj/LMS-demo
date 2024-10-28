@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+
+    <!-- Search Form -->
+    <form method="POST" action="{{ url_for('search') }}" class="mb-4">
+        <div class="input-group">
+            <input type="text" name="query" class="form-control" placeholder="Search..." required>
+            <div class="input-group-append">
+                <button class="btn btn-primary" type="submit">Search</button>
+            </div>
+        </div>
+    </form>
+    <h1>Welcome to the Logistics Management System</h1>
+
+    {% if user %}
+    <div class="greeting">
+        <h2>Hello, {{ user.username }}!</h2>
+    </div>
+    {% else %}
+    <div class="greeting">
+        <h2>Hello, Guest!</h2>
+    </div>
+    {% endif %}
+
+
+
+    <div class="row">
+        <div class="col-md-4">
+            <h3>Active Agents</h3>
+            <ul class="list-group">
+                {% for agent in agents %}
+                    <li class="list-group-item">{{ agent.name }} ({{ agent.role }})</li>
+                {% else %}
+                    <li class="list-group-item">No active agents.</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="col-md-4">
+            <h3>Quick Actions</h3>
+            <!-- Add other action buttons here if needed -->
+        </div>
+    </div>
+
+    <div id="announcement-carousel" class="carousel slide mt-4" data-ride="carousel">
+        <div class="carousel-inner">
+            {% for announcement in announcements %}
+                <div class="carousel-item {% if loop.first %}active{% endif %}">
+                    <div class="d-block w-100" style="height: 200px;">
+                        <h4>{{ announcement.title }}</h4>
+                        <p>{{ announcement.message }}</p>
+                    </div>
+                </div>
+            {% else %}
+                <div class="carousel-item active">
+                    <div class="d-block w-100" style="height: 200px;">
+                        <h4>No announcements available.</h4>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <a class="carousel-control-prev" href="#announcement-carousel" role="button" data-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="sr-only">Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#announcement-carousel" role="button" data-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="sr-only">Next</span>
+        </a>
+    </div>
+
+<!-- Chatbot Button -->
+<div id="chatbot-container">
+    <button id="chatbot-button" onclick="openChat()">Chat with us!</button>
+</div>
+
+<!-- Chatbot Popup -->
+<div id="chat-popup" class="chat-popup">
+    <div class="chat-header">
+        <h4>Chatbot</h4>
+        <button id="close-chat" onclick="closeChat()">X</button>
+    </div>
+    <div id="chat-messages" class="chat-messages">
+        <!-- Chatbot will respond here -->
+    </div>
+    <input id="user-input" type="text" placeholder="Ask a question..." onkeypress="handleKeyPress(event)">
+    <button onclick="sendMessage()">Send</button>
+</div>
+
+<!-- Add some CSS styling -->
+<style>
+    #chatbot-container {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+    }
+
+    #chatbot-button {
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        padding: 15px;
+        font-size: 18px;
+        cursor: pointer;
+    }
+
+    .chat-popup {
+        display: none;
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        border: 1px solid #ddd;
+        background-color: white;
+        width: 300px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .chat-header {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .chat-messages {
+        height: 200px;
+        padding: 10px;
+        overflow-y: auto;
+        border-top: 1px solid #ddd;
+        border-bottom: 1px solid #ddd;
+    }
+
+    input[type="text"] {
+        width: 75%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        margin: 10px;
+    }
+
+    button {
+        padding: 10px 15px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+</style>
+
+
+<script>
+    function openChat() {
+        document.getElementById("chat-popup").style.display = "block";
+    }
+
+    function closeChat() {
+        document.getElementById("chat-popup").style.display = "none";
+    }
+
+    const messages = {
+    "hello": "Hello! How can I assist you today?",
+    "what is your name": "I am your friendly chatbot assistant.",
+    "how can you help me": "I can help you with basic queries and direct you to the right resources.",
+    "what are your services": "We provide logistics management, shipment tracking, and much more.",
+    "how can i contact support": "You can contact support at support@example.com.",
+    "bye": "Goodbye! Feel free to reach out anytime."
+    };
+
+
+    function sendMessage() {
+        const userInput = document.getElementById("user-input").value.toLowerCase();
+        displayMessage("You", userInput);
+
+        let response = messages[userInput] || "Sorry, I don't understand that.";
+        displayMessage("Chatbot", response);
+
+        document.getElementById("user-input").value = "";  // Clear input field
+    }
+
+    function displayMessage(sender, message) {
+        const chatMessages = document.getElementById("chat-messages");
+        const messageElement = document.createElement("p");
+        messageElement.innerHTML = `<strong>${sender}:</strong> ${message}`;
+        chatMessages.appendChild(messageElement);
+        chatMessages.scrollTop = chatMessages.scrollHeight;  // Scroll to the latest message
+    }
+
+    function handleKeyPress(event) {
+        if (event.key === "Enter") {
+            sendMessage();
+        }
+    }
+</script>
+
+
+{% endblock %}

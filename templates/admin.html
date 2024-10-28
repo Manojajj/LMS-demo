@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="text-center my-4">Admin Dashboard</h1>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-6">
+            <h2>Overview</h2>
+            <ul class="list-group">
+                <li class="list-group-item">Total Agents: {{ total_agents }}</li>
+                <li class="list-group-item">Total Users: {{ total_users }}</li>
+                <li class="list-group-item">Total Shipments: {{ total_shipments }}</li>
+                <li class="list-group-item">Total Deals: {{ total_deals }}</li>
+                <li class="list-group-item">Total Properties: {{ total_properties }}</li>
+                <li class="list-group-item">Total Vehicles: {{ total_vehicles }}</li>
+                <li class="list-group-item">Total Clients: {{ total_clients }}</li>
+            </ul>
+        </div>
+
+        <div class="col-md-6">
+            <h2 class="mt-4 mt-md-0">Recent Activity</h2>
+            <!-- Placeholder for future features like recent logs, statistics, etc. -->
+            <div class="alert alert-info">No recent activity to display.</div>
+        </div>
+    </div>
+
+    <h2 class="mt-5 text-center">Manage Entities</h2>
+    <div class="row mt-4">
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h4 class="card-title">Agents</h4>
+                    <a href="{{ url_for('agent_management') }}" class="btn btn-primary">Manage Agents</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h4 class="card-title">Users</h4>
+                    <a href="{{ url_for('user_management') }}" class="btn btn-primary">Manage Users</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h4 class="card-title">Shipments</h4>
+                    <a href="{{ url_for('shipment_management') }}" class="btn btn-primary">Manage Shipments</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h4 class="card-title">Deals</h4>
+                    <a href="{{ url_for('deal_management') }}" class="btn btn-primary">Manage Deals</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h4 class="card-title">Properties</h4>
+                    <a href="{{ url_for('property_management') }}" class="btn btn-primary">Manage Properties</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h4 class="card-title">Vehicles</h4>
+                    <a href="{{ url_for('vehicle_management') }}" class="btn btn-primary">Manage Vehicles</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h4 class="card-title">Documents</h4>
+                    <a href="{{ url_for('document_management') }}" class="btn btn-primary">Manage Documents</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h4 class="card-title">Clients</h4>
+                    <a href="{{ url_for('client_management') }}" class="btn btn-primary">Manage Clients</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Advanced Analytics Section -->
+    <div class="row mt-5">
+        <div class="col-md-12">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h4 class="card-title">Advanced Analytics</h4>
+                    <p class="card-text">Gain insights with detailed analytics.</p>
+                    <a href="{{ url_for('advanced_analytics') }}" class="btn btn-success">Go to Analytics</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h1>Inbox</h1>
+
+{% if messages %}
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Sender</th>
+                <th>Message</th>
+                <th>Timestamp</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for message in messages %}
+            <tr>
+                <td>{{ message.sender.name }}</td>  <!-- Assuming sender is an instance of Agent or Admin -->
+                <td>{{ message.content }}</td>
+                <td>{{ message.timestamp }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No messages found.</p>
+{% endif %}
+
+<h1>Send Message to Agent</h1>
+
+<form action="{{ url_for('admin_messages') }}" method="POST">
+    <div class="form-group">
+        <label for="receiver_id">Select Agent</label>
+        <select name="receiver_id" id="receiver_id" class="form-control" required>
+            <option value="">Select Agent</option>
+            {% for agent in agents %}
+                <option value="{{ agent.id }}">{{ agent.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="content">Message Content</label>
+        <textarea name="content" id="content" class="form-control" required></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Send Message</button>
+</form>
+{% endblock %}

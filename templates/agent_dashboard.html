@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Agent Dashboard</h1>
+
+<div class="container mt-4">
+    <h2>Secure Communication with Admin</h2>
+
+    <!-- Communication History -->
+    <div class="communication-history">
+        <h4>Message History</h4>
+        <ul>
+            {% for communication in communications %}
+                <li>
+                    <strong>{{ communication.sender }}:</strong>
+                    {{ communication.message }} <small>({{ communication.timestamp }})</small>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Send Message to Admin -->
+    <div class="send-message mt-4">
+        <h4>Send Message to Admin</h4>
+        <form id="sendMessageForm">
+            <textarea id="message" rows="4" class="form-control" placeholder="Write your message here..."></textarea>
+            <button type="submit" class="btn btn-primary mt-2">Send</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.getElementById('sendMessageForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        const message = document.getElementById('message').value.trim();
+
+        if (!message) {
+            alert('Message content is required!');
+            return;
+        }
+
+        fetch('/agent_dashboard/send_message', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ message: message }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message);
+            location.reload();  // Reload to update the communication history
+        })
+        .catch(error => console.error('Error:', error));
+    });
+</script>
+{% endblock %}

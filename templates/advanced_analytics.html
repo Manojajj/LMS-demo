@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Advanced Analytics</h1>
+<div class="container mt-4">
+    <ul>
+        <li>Total Shipments: <span id="total-shipments">{{ analytics_data['Total Shipments'] }}</span></li>
+        <li>Total Deals: <span id="total-deals">{{ analytics_data['Total Deals'] }}</span></li>
+        <li>Total Properties: <span id="total-properties">{{ analytics_data['Total Properties'] }}</span></li>
+        <li>Total Vehicles: <span id="total-vehicles">{{ analytics_data['Total Vehicles'] }}</span></li>
+        <li>Total Clients: <span id="total-clients">{{ analytics_data['Total Clients'] }}</span></li>
+    </ul>
+
+    <div class="row mt-5">
+        <div class="col-md-6">
+            <canvas id="shipmentsChart"></canvas>
+        </div>
+        <div class="col-md-6">
+            <canvas id="dealsChart"></canvas>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <canvas id="propertiesChart"></canvas>
+        </div>
+        <div class="col-md-6">
+            <canvas id="vehiclesChart"></canvas>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <canvas id="clientsChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Data from the Flask context
+        const totals = {
+            shipments: {{ analytics_data['Total Shipments'] }},
+            deals: {{ analytics_data['Total Deals'] }},
+            properties: {{ analytics_data['Total Properties'] }},
+            vehicles: {{ analytics_data['Total Vehicles'] }},
+            clients: {{ analytics_data['Total Clients'] }}
+        };
+
+        // Update the total counts on the page
+        document.getElementById("total-shipments").innerText = totals.shipments;
+        document.getElementById("total-deals").innerText = totals.deals;
+        document.getElementById("total-properties").innerText = totals.properties;
+        document.getElementById("total-vehicles").innerText = totals.vehicles;
+        document.getElementById("total-clients").innerText = totals.clients;
+
+        // Function to create a chart
+        function createChart(ctx, label, data) {
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: [label],
+                    datasets: [{
+                        label: label,
+                        data: [data],
+                        backgroundColor: [
+                            'rgba(26, 188, 156, 0.6)'
+                        ],
+                        borderColor: [
+                            'rgba(26, 188, 156, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // Create charts
+        createChart(document.getElementById('shipmentsChart').getContext('2d'), 'Shipments', totals.shipments);
+        createChart(document.getElementById('dealsChart').getContext('2d'), 'Deals', totals.deals);
+        createChart(document.getElementById('propertiesChart').getContext('2d'), 'Properties', totals.properties);
+        createChart(document.getElementById('vehiclesChart').getContext('2d'), 'Vehicles', totals.vehicles);
+        createChart(document.getElementById('clientsChart').getContext('2d'), 'Clients', totals.clients);
+    });
+</script>
+{% endblock %}
